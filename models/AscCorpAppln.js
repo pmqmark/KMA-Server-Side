@@ -1,7 +1,13 @@
 import mongoose from "mongoose";
 
-const AscCorpApplnSchema = new mongoose.Schema({
-    applicationType: { type: String, default: 'associate', required: true, immutable: true },
+const AscCorpApplnSchema = new mongoose.Schema(
+  {
+    applicationType: {
+      type: String,
+      default: "associate",
+      required: true,
+      immutable: true,
+    },
     code: { type: String },
     orgName: { type: String },
     postalAddress: { type: String },
@@ -24,33 +30,33 @@ const AscCorpApplnSchema = new mongoose.Schema({
     paidupCapital: { type: String },
 
     meetReps: [
-        {
+      {
+        type: {
+          rid: { type: Number },
+          name: { type: String },
+          designation: { type: String },
+          telephone: { type: String },
+          mobile: { type: String },
+          email: { type: String },
+          photo: {
             type: {
-                rid: { type: Number },
-                name: { type: String },
-                designation: { type: String },
-                telephone: { type: String },
-                mobile: { type: String },
-                email: { type: String },
-                photo: {
-                    type: {
-                        name: { type: String },
-                        location: { type: String },
-                        key: { type: String },
-                    }
-                },
-            }
-        }
+              name: { type: String },
+              location: { type: String },
+              key: { type: String },
+            },
+          },
+        },
+      },
     ],
 
     references: [
-        {
-            type: {
-                name: { type: String },
-                address: { type: String },
-                contactNum: { type: String },
-            }
-        }
+      {
+        type: {
+          name: { type: String },
+          address: { type: String },
+          contactNum: { type: String },
+        },
+      },
     ],
 
     commnMode: { type: String },
@@ -58,13 +64,22 @@ const AscCorpApplnSchema = new mongoose.Schema({
     hasRenewalPay: { type: Boolean },
     payMode: { type: String },
 
+    signature: {
+      type: {
+        name: { type: String },
+        location: { type: String },
+        key: { type: String },
+      },
+    },
+
     // important
-    status: { type: String, default: 'pending' },
+    status: { type: String, default: "pending" },
 
-    amount: {type: Number},
-    remark: {type: String},
-
-}, { timestamps: true })
+    amount: { type: Number },
+    remark: { type: String },
+  },
+  { timestamps: true }
+);
 
 const AscCorpAppln = mongoose.model("AscCorpAppln", AscCorpApplnSchema);
 
