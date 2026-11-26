@@ -56,12 +56,26 @@ jobs:
             cd "$APP_DIR"
             echo "Deploying $(git rev-parse --short HEAD) -> origin/$BRANCH"
 
+            OLD_LOCK=$(git rev-parse HEAD:package-lock.json)
+
             git fetch --prune origin "$BRANCH"
             # .env is untracked (gitignored), so reset --hard leaves it alone.
             git reset --hard "origin/$BRANCH"
             echo "Now at $(git log -1 --format='%h %s')"
 
-            npm ci --omit=dev
+            NEW_LOCK=$(git rev-parse HEAD:package-lock.json)
+
+            # npm ci wipes node_modules and rebuilds native modules (bcrypt, sharp),
+            # so only do it when dependencies changed or the install is broken.
+            if [ "$OLD_LOCK" != "$NEW_LOCK" ]; then
+              echo "package-lock.json changed -> reinstalling dependencies"
+              npm ci --omit=dev
+            elif ! node -e "require('bcrypt'); require('sharp'); require('express'); require('mongoose')" > /dev/null 2>&1; then
+              echo "node_modules is broken -> reinstalling dependencies"
+              npm ci --omit=dev
+            else
+              echo "Dependencies unchanged -> skipping npm ci"
+            fi
 
             if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
               pm2 restart "$APP_NAME" --update-env
